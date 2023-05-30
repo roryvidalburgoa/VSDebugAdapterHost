@@ -7,6 +7,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using Newtonsoft.Json;
 using Ookii.CommandLine;
 
 using static System.FormattableString;
@@ -44,6 +45,21 @@ namespace SampleDebugAdapter
                 Console.WriteLine(ex.Message);
                 parser.WriteUsageToConsole();
                 return;
+            }
+
+            string programDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+            string filePath = Path.Combine(programDataFolder, "SampleDebugAdapter.txt");
+            try
+            {
+                using (StreamWriter writer = File.AppendText(filePath))
+                {
+                    writer.WriteLine("SampleDebugAdapter: " + JsonConvert.SerializeObject(arguments));
+                }
+
+            }
+            catch (Exception ex)
+            {
+                File.WriteAllText(filePath, ex.ToString());
             }
 
             if (arguments.Debug)
